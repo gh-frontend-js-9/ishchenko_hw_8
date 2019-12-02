@@ -34,10 +34,13 @@ class Tamagotchi{
         };
     }
     increment(){
-        if(this.food < 0 || this.clean < 0 || this.happiness < 0){
+        if(this.food <= 0 || this.clean <= 0 || this.happiness <= 0){
             clearTimeout(temp);
             clearTimeout(temp2);
-            
+            alert(`Tamagochi existed ${time} seconds, press OK to restart`);
+            d.style.display = 'block';
+            v.style.display = 'none';
+
         }
         this.food -= this.point;
         let prog1 = document.querySelector('.out1');
@@ -51,12 +54,6 @@ class Tamagotchi{
     }
     decreasingPoints(){
         temp = setInterval(this.increment.bind(this),5000);
-    }
-    checkStats(){
-        if(this.food < 0 || this.clean < 0 || this.happiness < 0){
-            clearInterval(temp);
-            clearInterval(temp2);
-        }
     }
 }
 
@@ -72,17 +69,14 @@ class Cat extends Tamagotchi{
     }
 }
 
-
-
 let v = document.querySelector('.control-buttons');
 v.style.display = 'none';
+let d = document.querySelector('#type');
 
 type.onclick = function (){
-    let d = document.querySelector('#type');
     d.style.display = 'none';
     v.style.display = 'block';
     function timerOfLive() {
-        document.querySelector('#timer').innerHTML = time;
         time++;
         temp2 = setTimeout(timerOfLive,1000);
     }
@@ -90,8 +84,8 @@ type.onclick = function (){
 }
 
 function random2() {
-    let rand = 50 + Math.random() * (70 + 1 - 50);
-    return Math.floor(rand);
+    let rand2 = 50 + Math.random() * (70 + 1 - 50);
+    return Math.floor(rand2);
 }
 
 function random() {
@@ -105,6 +99,12 @@ pug.onclick = function () {
     pug.washUp();
     pug.goWalk();
     pug.decreasingPoints();
+    let prog1 = document.querySelector('.out1');
+    prog1.innerHTML = `<progress value="${pug.food}" max ="${pug.maxStats}"></progress>`;
+    let prog2 = document.querySelector('.out2');
+    prog2.innerHTML = `<progress value="${pug.clean}" max ="${pug.maxStats}"></progress>`;
+    let prog3 = document.querySelector('.out3');
+    prog3.innerHTML = `<progress value="${pug.happiness}" max ="${pug.maxStats}"></progress>`;
 }
 
 cat.onclick = function () {
@@ -113,5 +113,11 @@ cat.onclick = function () {
     cat.washUp();
     cat.goWalk();
     cat.decreasingPoints();
+    let prog1 = document.querySelector('.out1');
+    prog1.innerHTML = `<progress value="${cat.food}" max ="${cat.maxStats}"></progress>`;
+    let prog2 = document.querySelector('.out2');
+    prog2.innerHTML = `<progress value="${cat.clean}" max ="${cat.maxStats}"></progress>`;
+    let prog3 = document.querySelector('.out3');
+    prog3.innerHTML = `<progress value="${cat.happiness}" max ="${cat.maxStats}"></progress>`;
 }
 
