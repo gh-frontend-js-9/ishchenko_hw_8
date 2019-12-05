@@ -1,123 +1,120 @@
-/*
-    1. зявляються кнопки вибору тамагочі(pug,cat) через наслідування основного класу Tamagochi
-    2. зявляэться інтерфейс тамагочі(кнопки:food,clean,run; шкала цих статів)
-    3. Якщо програв показуэ скыльки часу прожив тамагочі і пропонуэ почати знову.
- */
-let time = 0;
-let temp;
-let temp2;
-
-class Tamagotchi{
-    constructor(food,clean,happiness,point,maxStats) {
+class Tamagotchi {
+    constructor(food, clean, happiness, decreasingPoint, maxStats) {
         this.food = food;
         this.clean = clean;
         this.happiness = happiness;
-        this.point = point;
+        this.decreasingPoint = decreasingPoint;
         this.maxStats = maxStats;
     }
-    eatFood(){
+    eatFood() {
         eat.onclick = () => {
             this.food += 30;
+            if(this.food > this.maxStats){
+                this.food = this.maxStats;
+                generateProgressBar('.eatProgressBarElem', this.maxStats, this.food);
+                generateProgressBar('.washProgressBarElem', this.maxStats, this.clean);
+            }
+            generateProgressBar('.eatProgressBarElem', this.maxStats, this.food);
             this.clean -= 20;
+            generateProgressBar('.washProgressBarElem', this.maxStats, this.clean);
         };
     }
-    washUp(){
+    washUp() {
         clean.onclick = () => {
             this.clean += 40;
+            if(this.clean > this.maxStats){
+                this.clean = this.maxStats;
+                generateProgressBar('.washProgressBarElem', this.maxStats, this.clean);
+                generateProgressBar('.runProgressBarElem', this.maxStats, this.happiness);
+            }
+            generateProgressBar('.washProgressBarElem', this.maxStats, this.clean);
             this.happiness -= 20;
+            generateProgressBar('.runProgressBarElem', this.maxStats, this.happiness);
         };
     }
-    goWalk(){
+    goWalk() {
         run.onclick = () => {
             this.happiness += 15;
+            if(this.happiness > this.maxStats){
+                this.happiness = this.maxStats;
+                generateProgressBar('.runProgressBarElem', this.maxStats, this.happiness);
+                generateProgressBar('.eatProgressBarElem', this.maxStats, this.food);
+            }
+            generateProgressBar('.runProgressBarElem', this.maxStats, this.happiness);
             this.food -= 10;
+            generateProgressBar('.eatProgressBarElem', this.maxStats, this.food);
         };
     }
-    increment(){
-        if(this.food <= 0 || this.clean <= 0 || this.happiness <= 0){
-            clearTimeout(temp);
-            clearTimeout(temp2);
-            alert(`Tamagochi existed ${time} seconds, press OK to restart`);
-            d.style.display = 'block';
-            v.style.display = 'none';
-
+    decreasingInterval(){
+        this.intervalAccess = setInterval(this.increment.bind(this), 5000);
+        this.intervalStopGame = setInterval(this.stopGame.bind(this),1000);
+        buttonControl('none','block');
+    }
+    increment() {
+        this.food -= this.decreasingPoint;
+        generateProgressBar('.eatProgressBarElem', this.maxStats, this.food);
+        this.clean -= this.decreasingPoint;
+        generateProgressBar('.washProgressBarElem', this.maxStats, this.clean);
+        this.happiness -= this.decreasingPoint;
+        generateProgressBar('.runProgressBarElem', this.maxStats, this.happiness);
+    }
+    timer(){
+        this.time = 0;
+        let timerOfLive = () => {
+            document.querySelector('#out').innerHTML = this.time;
+            this.time++;
+            this.timerAccess = setTimeout(timerOfLive,1000);
         }
-        this.food -= this.point;
-        let prog1 = document.querySelector('.out1');
-        prog1.innerHTML = `<progress value="${this.food}" max ="${this.maxStats}"></progress>`;
-        this.clean -= this.point;
-        let prog2 = document.querySelector('.out2');
-        prog2.innerHTML = `<progress value="${this.clean}" max ="${this.maxStats}"></progress>`;
-        this.happiness -= this.point;
-        let prog3 = document.querySelector('.out3');
-        prog3.innerHTML = `<progress value="${this.happiness}" max ="${this.maxStats}"></progress>`;
+        timerOfLive();
     }
-    decreasingPoints(){
-        temp = setInterval(this.increment.bind(this),5000);
+    stopGame(){
+        if (this.food < 0 || this.clean < 0 || this.happiness < 0){
+            clearInterval(this.intervalAccess);
+            clearInterval(this.timerAccess);
+            buttonControl('block','none');
+            alert(`your tamagotchi existed ${this.time} sec`);
+            return clearInterval(this.intervalStopGame);
+        }
     }
-}
-
-class Pug extends Tamagotchi{
-    constructor(food,clean,happiness,point,maxStats) {
-        super(food,clean,happiness,point,maxStats);
-    }
-}
-
-class Cat extends Tamagotchi{
-    constructor(food,clean,happiness,point,maxStats) {
-        super(food,clean,happiness,point,maxStats);
+    initialize(){
+        this.eatFood();
+        this.washUp();
+        this.goWalk();
+        this.timer();
+        this.decreasingInterval();
     }
 }
 
-let v = document.querySelector('.control-buttons');
-v.style.display = 'none';
-let d = document.querySelector('#type');
 
-type.onclick = function (){
-    d.style.display = 'none';
-    v.style.display = 'block';
-    function timerOfLive() {
-        time++;
-        temp2 = setTimeout(timerOfLive,1000);
-    }
-    timerOfLive();
+function buttonControl(typeBlock,controlBlock) {
+    document.querySelector('#type').style.display = typeBlock;
+    document.querySelector('.control-buttons').style.display = controlBlock;
+}
+buttonControl('block','none');
+
+function generateProgressBar(elemId,max,value){
+    return document.querySelector(elemId).innerHTML = `<progress value="${value}" max="${max}"></progress>`;
 }
 
-function random2() {
-    let rand2 = 50 + Math.random() * (70 + 1 - 50);
-    return Math.floor(rand2);
-}
-
-function random() {
-    let rand = 50 + Math.random() * (100 + 1 - 50);
+function random(a,b) {
+    let rand = a + Math.random() * (b + 1 - a);
     return Math.floor(rand);
 }
 
+
 pug.onclick = function () {
-    let pug = new Pug(random2(),random2(),random2(),5,70);
-    pug.eatFood();
-    pug.washUp();
-    pug.goWalk();
-    pug.decreasingPoints();
-    let prog1 = document.querySelector('.out1');
-    prog1.innerHTML = `<progress value="${pug.food}" max ="${pug.maxStats}"></progress>`;
-    let prog2 = document.querySelector('.out2');
-    prog2.innerHTML = `<progress value="${pug.clean}" max ="${pug.maxStats}"></progress>`;
-    let prog3 = document.querySelector('.out3');
-    prog3.innerHTML = `<progress value="${pug.happiness}" max ="${pug.maxStats}"></progress>`;
+    let pug = new Tamagotchi(random(50,70),random(50,70),random(50,70),5,70);
+    pug.initialize();
+    console.log(pug);
+    generateProgressBar('.eatProgressBarElem',pug.maxStats,pug.food);
+    generateProgressBar('.washProgressBarElem',pug.maxStats,pug.clean);
+    generateProgressBar('.runProgressBarElem',pug.maxStats,pug.happiness);
 }
 
 cat.onclick = function () {
-    let cat = new Cat(random(),random(),random(),3,100);
-    cat.eatFood();
-    cat.washUp();
-    cat.goWalk();
-    cat.decreasingPoints();
-    let prog1 = document.querySelector('.out1');
-    prog1.innerHTML = `<progress value="${cat.food}" max ="${cat.maxStats}"></progress>`;
-    let prog2 = document.querySelector('.out2');
-    prog2.innerHTML = `<progress value="${cat.clean}" max ="${cat.maxStats}"></progress>`;
-    let prog3 = document.querySelector('.out3');
-    prog3.innerHTML = `<progress value="${cat.happiness}" max ="${cat.maxStats}"></progress>`;
+    let cat = new Tamagotchi(random(50,100),random(50,100),random(50,100),3,100);
+    cat.initialize();
+    generateProgressBar('.eatProgressBarElem',cat.maxStats,cat.food);
+    generateProgressBar('.washProgressBarElem',cat.maxStats,cat.clean);
+    generateProgressBar('.runProgressBarElem',cat.maxStats,cat.happiness);
 }
-
