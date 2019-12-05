@@ -6,6 +6,7 @@ class Tamagotchi {
         this.decreasingPoint = decreasingPoint;
         this.maxStats = maxStats;
     }
+
     eatFood() {
         eat.onclick = () => {
             this.food += 30;
@@ -19,6 +20,7 @@ class Tamagotchi {
             generateProgressBar('.washProgressBarElem', this.maxStats, this.clean);
         };
     }
+
     washUp() {
         clean.onclick = () => {
             this.clean += 40;
@@ -32,6 +34,7 @@ class Tamagotchi {
             generateProgressBar('.runProgressBarElem', this.maxStats, this.happiness);
         };
     }
+
     goWalk() {
         run.onclick = () => {
             this.happiness += 15;
@@ -45,12 +48,14 @@ class Tamagotchi {
             generateProgressBar('.eatProgressBarElem', this.maxStats, this.food);
         };
     }
+
     decreasingInterval(){
-        this.intervalAccess = setInterval(this.increment.bind(this), 5000);
+        this.intervalAccess = setInterval(this.decrement.bind(this), 5000);
         this.intervalStopGame = setInterval(this.stopGame.bind(this),1000);
         buttonControl('none','block');
     }
-    increment() {
+
+    decrement() {
         this.food -= this.decreasingPoint;
         generateProgressBar('.eatProgressBarElem', this.maxStats, this.food);
         this.clean -= this.decreasingPoint;
@@ -58,24 +63,27 @@ class Tamagotchi {
         this.happiness -= this.decreasingPoint;
         generateProgressBar('.runProgressBarElem', this.maxStats, this.happiness);
     }
+
     timer(){
         this.time = 0;
         let timerOfLive = () => {
-            document.querySelector('#out').innerHTML = this.time;
             this.time++;
+            document.querySelector('#out').innerHTML = this.time;
             this.timerAccess = setTimeout(timerOfLive,1000);
         }
         timerOfLive();
     }
+
     stopGame(){
         if (this.food < 0 || this.clean < 0 || this.happiness < 0){
             clearInterval(this.intervalAccess);
             clearInterval(this.timerAccess);
             buttonControl('block','none');
-            alert(`your tamagotchi existed ${this.time} sec`);
+            alert(`your Tamagotchi existed ${this.time} sec`);
             return clearInterval(this.intervalStopGame);
         }
     }
+
     initialize(){
         this.eatFood();
         this.washUp();
@@ -105,7 +113,6 @@ function random(a,b) {
 pug.onclick = function () {
     let pug = new Tamagotchi(random(50,70),random(50,70),random(50,70),5,70);
     pug.initialize();
-    console.log(pug);
     generateProgressBar('.eatProgressBarElem',pug.maxStats,pug.food);
     generateProgressBar('.washProgressBarElem',pug.maxStats,pug.clean);
     generateProgressBar('.runProgressBarElem',pug.maxStats,pug.happiness);

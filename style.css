@@ -1,13 +1,22 @@
 button{
+    display: block;
     border: 0;
     border-radius: .5em;
     padding: 1em;
+    margin-bottom: .5em;
     background-color: #a3ce5d;
     color: #fff;
     text-transform: uppercase;
     font-weight: bold;
-    min-width:120px;
+    min-width: 120px;
 }
+
+progress{
+    height: 30px;
+    margin-bottom: .5em;
+    border: 2px solid #a3ce5d;
+}
+
 
 button:hover{
     background-color: #a4c35c;
